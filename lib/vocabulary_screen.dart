@@ -1,6 +1,6 @@
 import 'dart:developer';
 
-//import 'package:audioplayers/audioplayers.dart';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -13,7 +13,7 @@ class VocabularyScreen extends StatefulWidget {
 
 class _VocabularyScreenState extends State<VocabularyScreen>
     with TickerProviderStateMixin {
-  //final AudioPlayer _audioPlayer = AudioPlayer();
+  final AudioPlayer _audioPlayer = AudioPlayer();
   int currentQuestionIndex = 0;
   String? selectedAnswer;
   bool isAnswered = false;
@@ -53,6 +53,7 @@ class _VocabularyScreenState extends State<VocabularyScreen>
 
   @override
   void dispose() {
+    _audioPlayer.dispose();
     _pointAnimationController.dispose();
     super.dispose();
   }
@@ -138,7 +139,9 @@ class _VocabularyScreenState extends State<VocabularyScreen>
 
   Future<void> _playSuccessSound() async {
     try {
-      SystemSound.play(SystemSoundType.click);
+      await _audioPlayer.stop();
+      await _audioPlayer.play(AssetSource('sound/sound.mp3'));
+      //SystemSound.play(SystemSoundType.click);
     } catch (error) {
       log('Error playing success sound : $error');
     }
@@ -146,7 +149,7 @@ class _VocabularyScreenState extends State<VocabularyScreen>
 
   Future<void> _vibrate() async {
     try {
-      await HapticFeedback.heavyImpact();
+      await HapticFeedback.vibrate();
     } catch (error) {
       log('Error vibrating : $error');
     }
